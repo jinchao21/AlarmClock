@@ -35,43 +35,45 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="10dp">
         <CheckBox
-            android:id="@+id/checkBox1"
+            android:id="@+id/monday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="一" />
+
+        <!--Monday 星期一 Tuesday 星期二 Wednesday 星期三 Thursday 星期四 Friday 星期五 Saturday 星期六 Sunday 星期日-->
         <CheckBox
-            android:id="@+id/checkBox2"
+            android:id="@+id/tuesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="二" />
         <CheckBox
-            android:id="@+id/checkBox3"
+            android:id="@+id/wednesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="三" />
         <CheckBox
-            android:id="@+id/checkBox4"
+            android:id="@+id/thursday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="四" />
         <CheckBox
-            android:id="@+id/checkBox5"
+            android:id="@+id/friday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="五" />
         <CheckBox
-            android:id="@+id/checkBox6"
+            android:id="@+id/saturday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="六" />
         <CheckBox
-            android:id="@+id/checkBox7"
+            android:id="@+id/sunday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -115,7 +117,7 @@
             android:text="取消"/>
 
         <Button
-            android:id="@+id/confirm"
+            android:id="@+id/save"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -1,6 +1,8 @@
 package com.example.ljc.alarmclock.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.ljc.alarmclock.R;
+import com.example.ljc.alarmclock.model.Alarm;
+
+import java.util.List;
 
 /**
  * Created by ljc on 17-10-17.
@@ -17,39 +22,36 @@ import com.example.ljc.alarmclock.R;
 public class AlarmAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
+    private List<Alarm> alarmList;
+    private Alarm alarm;
+    private String s5 = "";
 
-    public AlarmAdapter(Context context){
+    public AlarmAdapter(Context context, List<Alarm> alarmList){
+        this.alarmList = alarmList;
         this.mInflater = LayoutInflater.from(context);
     }
 
-//    private LayoutInflater mInflater;//得到一个LayoutInfalter对象用来导入布局
-//
-//    /*构造函数*/
-//    public MyAdapter(Context context) {
-//        this.mInflater = LayoutInflater.from(context);
-//    }
-
-
     @Override
     public int getCount() {
-        return 0;
+        return alarmList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return alarmList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
+        alarm = alarmList.get(position);
         if (convertView == null){
-            convertView = mInflater.inflate(R.layout.alarm_item, null);
+            convertView = mInflater.inflate(R.layout.alarm_item, parent,false);
             holder = new ViewHolder();
             holder.alarmTime = (TextView)convertView.findViewById(R.id.alarmTime);
             holder.ringOrvibrate = (TextView)convertView.findViewById(R.id.ringOrvibrate);
@@ -59,55 +61,30 @@ public class AlarmAdapter extends BaseAdapter {
         }else {
             holder = (ViewHolder)convertView.getTag();
         }
+
+        String s1 = alarm.getHour()>9 ? Integer.toString(alarm.getHour()) : "0" + Integer.toString(alarm.getHour());
+        String s2 = alarm.getMinutes()>9 ? Integer.toString(alarm.getMinutes()) : "0" + Integer.toString(alarm.getMinutes());
+        holder.alarmTime.setText(s1 + ":" + s2);
+        String s3 = alarm.isRing() ? "响铃  " : "";
+        String s4 = alarm.isVibrate() ? "振动" :  "";
+        holder.ringOrvibrate.setText(s3 + s4);
+//        String[] days = {"一", "二", "三", "四", "五", "六", "天"};
+//        for (int i=0;i<7;i++){
+//            if (alarm.daysofweek % 10 == 1)
+//                s5 = days[6-i] + " " + s5;
+//
+//            alarm.daysofweek = alarm.daysofweek/10;
+//        }
+        holder.repeat.setText(alarm.getDaysofweek());
+        holder.alarmState.setOnCheckedChangeListener(null);
+        holder.alarmState.setChecked(alarm.isState());
         return convertView;
     }
 
-    public final class ViewHolder{
-        public TextView alarmTime;
-        public TextView ringOrvibrate;
-        public TextView repeat;
-        public Switch alarmState;
+    class ViewHolder{
+        TextView alarmTime;
+        TextView ringOrvibrate;
+        TextView repeat;
+        Switch alarmState;
     }
-
-//    @Override
-//    public View getView(finalint position, View convertView, ViewGroup parent) {
-//        ViewHolder holder;
-//        //观察convertView随ListView滚动情况
-//        Log.v("MyListViewBase", "getView " + position + " " + convertView);
-//        if (convertView == null) {
-//            convertView = mInflater.inflate(R.layout.item,
-//                    null);
-//            holder = new ViewHolder();
-//                    /*得到各个控件的对象*/
-//            holder.title = (TextView) convertView.findViewById(R.id.ItemTitle);
-//            holder.text = (TextView) convertView.findViewById(R.id.ItemText);
-//            holder.bt = (Button) convertView.findViewById(R.id.ItemButton);
-//            convertView.setTag(holder);//绑定ViewHolder对象
-//        }
-//        else{
-//            holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
-//        }
-//            /*设置TextView显示的内容，即我们存放在动态数组中的数据*/
-//        holder.title.setText(getDate().get(position).get("ItemTitle").toString());
-//        holder.text.setText(getDate().get(position).get("ItemText").toString());
-//
-//            /*为Button添加点击事件*/
-//        holder.bt.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            publicvoid onClick(View v) {
-//                Log.v("MyListViewBase", "你点击了按钮" + position);                                //打印Button的点击信息
-//
-//            }
-//        });
-//
-//        return convertView;
-//    }
-//
-//    /*存放控件*/
-//    public final class ViewHolder{
-//public TextView title;
-//public TextView text;
-//public Button   bt;
-//        }
 }
