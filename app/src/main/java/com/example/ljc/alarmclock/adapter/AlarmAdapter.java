@@ -24,7 +24,6 @@ public class AlarmAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<Alarm> alarmList;
     private Alarm alarm;
-    private String s5 = "";
 
     public AlarmAdapter(Context context, List<Alarm> alarmList){
         this.alarmList = alarmList;
@@ -67,7 +66,7 @@ public class AlarmAdapter extends BaseAdapter {
         holder.alarmTime.setText(s1 + ":" + s2);
         String s3 = alarm.isRing() ? "响铃  " : "";
         String s4 = alarm.isVibrate() ? "振动" :  "";
-        holder.ringOrvibrate.setText(s3 + s4);
+        holder.ringOrvibrate.setText((s3 + s4)==""?"只提醒":(s3+s4));
 //        String[] days = {"一", "二", "三", "四", "五", "六", "天"};
 //        for (int i=0;i<7;i++){
 //            if (alarm.daysofweek % 10 == 1)
