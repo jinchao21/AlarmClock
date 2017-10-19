@@ -1,8 +1,11 @@
 package com.example.ljc.alarmclock;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -195,7 +198,7 @@ public class NewAlarm extends AppCompatActivity {
 
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put("hour",hour);
+                values.put("hour", hour);
                 values.put("minutes", minutes);
                 values.put("daysofweek", daysofweek);
                 values.put("vibrate", vibrate);
@@ -203,20 +206,62 @@ public class NewAlarm extends AppCompatActivity {
                 values.put("state", state);
                 db.insert("alarms", null, values);
                 Toast.makeText(NewAlarm.this, "闹钟添加成功", Toast.LENGTH_SHORT).show();
+                setOnceAlarm();
                 finish();
             }
         });
-
-//        db.execSQL("CREATE TABLE alarms (" +
-//                "_id INTEGER PRIMARY KEY," +
-//                "hour INTEGER, " +
-//                "minutes INTEGER, " +
-//                "daysofweek INTEGER, " +
-//                "vibrate INTEGER, " +
-//                "ring INTEGER, " +
-//                "state INTEGER);");
-
     }
 
 
-}
+    public void setOnceAlarm() {
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
+        intent.setAction("com.example.ljc.alarmclock.AlarmBroadcastReceiver");
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("hour", hour);
+        bundle.putInt("minutes", minutes);
+        bundle.putInt("daysofweek", daysofweek);
+        bundle.putInt("vibrate", vibrate);
+        bundle.putInt("ring", ring);
+        bundle.putInt("state", state);
+
+        intent.putExtras(bundle);
+
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+    }
+
+//    Intent alarmIntent = new Intent(context, AlarmClockReceiver.class);
+//                alarmIntent.setAction("cn.edu.usts.cardhelper.alarmclock");
+//    Bundle bundle = new Bundle();
+//                bundle.putInt("alarmClockId", clockInfo.getId());
+//                bundle.putString("repeatCycle",clockInfo.getRepeatCycle());
+//                bundle.putInt("hour", clockInfo.getHour());
+//                bundle.putInt("minute", clockInfo.getMinute());
+//                bundle.putString("ringInfo", clockInfo.getRingInfo());
+//                bundle.putInt("isShake", clockInfo.getShake());
+//                bundle.putString("tag", clockInfo.getTag());
+//                alarmIntent.putExtras(bundle);
+//    PendingIntent pi = PendingIntent.getBroadcast(context, clockInfo.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//    int dTime = NextRingTimeProvider.showRingTimeByRepeatCycle(clockInfo.getRepeatCycle(), clockInfo.getHour(), clockInfo.getMinute());
+//                if(clockInfo.getRepeatCycle().equals(Alarm_CLOCK_RING_ONLY_ONCE)){
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, clockInfo.getHour());
+//        calendar.set(Calendar.MINUTE, clockInfo.getMinute());
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.MILLISECOND, 0);
+//        if(System.currentTimeMillis() < calendar.getTimeInMillis()){
+//            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+dTime, pi);
+//            Log.i(TAG, "--重启广播发送成功！  只响一次的闹钟时间未到，广播已发送--闹钟ID:"+clockInfo.getId()+"--repeatCycle"+clockInfo.getRepeatCycle()+"--hour:"+clockInfo.getHour()+"---minute:"+clockInfo.getMinute()+"---铃声为："+clockInfo.getRingInfo()+"---振动："+clockInfo.getShake()+"---tag:"+clockInfo.getTag());
+//        }
+//    }else{
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+dTime, pi);
+//        Log.i(TAG, "--重启广播发送成功！  --闹钟ID:"+clockInfo.getId()+"--repeatCycle"+clockInfo.getRepeatCycle()+"--hour:"+clockInfo.getHour()+"---minute:"+clockInfo.getMinute()+"---铃声为："+clockInfo.getRingInfo()+"---振动："+clockInfo.getShake()+"---tag:"+clockInfo.getTag());
+
+    }

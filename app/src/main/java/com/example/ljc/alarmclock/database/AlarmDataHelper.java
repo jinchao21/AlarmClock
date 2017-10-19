@@ -26,12 +26,6 @@ public class AlarmDataHelper extends SQLiteOpenHelper {
                 "vibrate INTEGER, " +
                 "ring INTEGER, " +
                 "state INTEGER);");
-
-        // @formatter:on
-        // insert default alarms
-//        String insertMe = "INSERT INTO alarms " + "(hour, minutes, daysofweek, vibrate, state) VALUES ";
-//        db.execSQL(insertMe + "(8, 30, 10001, 1, 0);");
-//        db.execSQL(insertMe + "(9, 00, 11011, 1, 0);");
     }
 
     @Override

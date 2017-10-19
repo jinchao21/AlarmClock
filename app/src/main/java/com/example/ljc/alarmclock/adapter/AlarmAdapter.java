@@ -1,16 +1,20 @@
 package com.example.ljc.alarmclock.adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.ljc.alarmclock.R;
+import com.example.ljc.alarmclock.database.AlarmDataHelper;
 import com.example.ljc.alarmclock.model.Alarm;
 
 import java.util.List;
@@ -25,9 +29,13 @@ public class AlarmAdapter extends BaseAdapter {
     private List<Alarm> alarmList;
     private Alarm alarm;
 
+    private AlarmDataHelper dbHelper;
+
+
     public AlarmAdapter(Context context, List<Alarm> alarmList){
         this.alarmList = alarmList;
         this.mInflater = LayoutInflater.from(context);
+        dbHelper = new AlarmDataHelper(context, "alarm.db", null, 1);
     }
 
     @Override
@@ -46,7 +54,7 @@ public class AlarmAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         alarm = alarmList.get(position);
         if (convertView == null){
@@ -67,16 +75,30 @@ public class AlarmAdapter extends BaseAdapter {
         String s3 = alarm.isRing() ? "响铃  " : "";
         String s4 = alarm.isVibrate() ? "振动" :  "";
         holder.ringOrvibrate.setText((s3 + s4)==""?"只提醒":(s3+s4));
-//        String[] days = {"一", "二", "三", "四", "五", "六", "天"};
-//        for (int i=0;i<7;i++){
-//            if (alarm.daysofweek % 10 == 1)
-//                s5 = days[6-i] + " " + s5;
-//
-//            alarm.daysofweek = alarm.daysofweek/10;
-//        }
+
         holder.repeat.setText(alarm.getDaysofweek());
         holder.alarmState.setOnCheckedChangeListener(null);
+
         holder.alarmState.setChecked(alarm.isState());
+        final int id = alarmList.get(position).id;
+        holder.alarmState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("state", 1);
+                    db.update("alarms", values, "_id ="+id,null);
+                    alarmList.get(position).setState(true);
+                }else {
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("state", 0);
+                    db.update("alarms", values, "_id ="+id,null);
+                    alarmList.get(position).setState(false);
+                }
+            }
+        });
         return convertView;
     }
 
