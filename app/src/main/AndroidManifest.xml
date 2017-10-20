@@ -28,6 +28,13 @@
                 <action android:name="com.example.ljc.alarmclock.AlarmBroadcastReceiver"></action>
             </intent-filter>
         </receiver>
+
+        <service android:name=".AlarmService"
+            android:enabled="true"
+            android:exported="true">
+
+        </service>
+        <activity android:name=".RingActivity"/>
     </application>
 
 </manifest>

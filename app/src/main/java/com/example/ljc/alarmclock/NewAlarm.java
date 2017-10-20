@@ -1,14 +1,16 @@
 package com.example.ljc.alarmclock;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +18,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -60,7 +61,7 @@ public class NewAlarm extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.newalarm);
+        setContentView(R.layout.activity_newalarm);
 
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
@@ -193,6 +194,7 @@ public class NewAlarm extends AppCompatActivity {
         });
 
         btSave.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
 
@@ -213,13 +215,22 @@ public class NewAlarm extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void setOnceAlarm() {
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query("alarms", null, null, null, null, null, null);
+        cursor.moveToLast();
+        int id = cursor.getInt(cursor.getColumnIndex("_id"));
+        cursor.close();
+        db.close();
 
         Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
         intent.setAction("com.example.ljc.alarmclock.AlarmBroadcastReceiver");
 
         Bundle bundle = new Bundle();
+        bundle.putInt("_id", id);
+        Log.d("asd", "new alarm id = " + Integer.toString(id));
         bundle.putInt("hour", hour);
         bundle.putInt("minutes", minutes);
         bundle.putInt("daysofweek", daysofweek);
@@ -229,39 +240,24 @@ public class NewAlarm extends AppCompatActivity {
 
         intent.putExtras(bundle);
 
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-    }
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minutes);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1, pi);
+//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000*30, pi);
+        Log.d("asd", "calendar1 = " + calendar.getTimeInMillis());
+        Log.d("asd", "calendar2 = " + System.currentTimeMillis());
+//        if (calendar.getTimeInMillis() > System.currentTimeMillis())
+//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+//        else
+//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 24 * 60 * 60 * 1000  + calendar.getTimeInMillis(), pi);
 
-//    Intent alarmIntent = new Intent(context, AlarmClockReceiver.class);
-//                alarmIntent.setAction("cn.edu.usts.cardhelper.alarmclock");
-//    Bundle bundle = new Bundle();
-//                bundle.putInt("alarmClockId", clockInfo.getId());
-//                bundle.putString("repeatCycle",clockInfo.getRepeatCycle());
-//                bundle.putInt("hour", clockInfo.getHour());
-//                bundle.putInt("minute", clockInfo.getMinute());
-//                bundle.putString("ringInfo", clockInfo.getRingInfo());
-//                bundle.putInt("isShake", clockInfo.getShake());
-//                bundle.putString("tag", clockInfo.getTag());
-//                alarmIntent.putExtras(bundle);
-//    PendingIntent pi = PendingIntent.getBroadcast(context, clockInfo.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//    int dTime = NextRingTimeProvider.showRingTimeByRepeatCycle(clockInfo.getRepeatCycle(), clockInfo.getHour(), clockInfo.getMinute());
-//                if(clockInfo.getRepeatCycle().equals(Alarm_CLOCK_RING_ONLY_ONCE)){
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.set(Calendar.HOUR_OF_DAY, clockInfo.getHour());
-//        calendar.set(Calendar.MINUTE, clockInfo.getMinute());
-//        calendar.set(Calendar.SECOND, 0);
-//        calendar.set(Calendar.MILLISECOND, 0);
-//        if(System.currentTimeMillis() < calendar.getTimeInMillis()){
-//            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+dTime, pi);
-//            Log.i(TAG, "--重启广播发送成功！  只响一次的闹钟时间未到，广播已发送--闹钟ID:"+clockInfo.getId()+"--repeatCycle"+clockInfo.getRepeatCycle()+"--hour:"+clockInfo.getHour()+"---minute:"+clockInfo.getMinute()+"---铃声为："+clockInfo.getRingInfo()+"---振动："+clockInfo.getShake()+"---tag:"+clockInfo.getTag());
-//        }
-//    }else{
-//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+dTime, pi);
-//        Log.i(TAG, "--重启广播发送成功！  --闹钟ID:"+clockInfo.getId()+"--repeatCycle"+clockInfo.getRepeatCycle()+"--hour:"+clockInfo.getHour()+"---minute:"+clockInfo.getMinute()+"---铃声为："+clockInfo.getRingInfo()+"---振动："+clockInfo.getShake()+"---tag:"+clockInfo.getTag());
-
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+);
     }
+}

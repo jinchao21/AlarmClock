@@ -89,12 +89,14 @@ public class AlarmAdapter extends BaseAdapter {
                     ContentValues values = new ContentValues();
                     values.put("state", 1);
                     db.update("alarms", values, "_id ="+id,null);
+                    db.close();
                     alarmList.get(position).setState(true);
                 }else {
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
                     ContentValues values = new ContentValues();
                     values.put("state", 0);
                     db.update("alarms", values, "_id ="+id,null);
+                    db.close();
                     alarmList.get(position).setState(false);
                 }
             }

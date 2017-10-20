@@ -56,7 +56,7 @@ public class Alarm {
         String[] days = {"一", "二", "三", "四", "五", "六", "天", "只响一次"};
         String s5 = "";
         if (daysofweek==0) {
-            return days[7];
+            return days[7] + state;
         } else {
 
             for (int i = 0; i < 7; i++) {
@@ -64,7 +64,7 @@ public class Alarm {
                     s5 = days[6 - i] + " " + s5;
                 a = a / 10;
             }
-            return s5;
+            return s5 + state;
         }
     }
 

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button);
         listView = (ListView) findViewById(R.id.listView);
 
+        Log.d("asd", "System = " + System.currentTimeMillis());
 
         Handler mTimeHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -99,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void deleteAlarm(int id){
+    public void deleteAlarm(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-            db.delete("alarms", "_id =" + id, null);
+        db.delete("alarms", "_id =" + id, null);
     }
 
     public void initListData() {
@@ -119,10 +121,12 @@ public class MainActivity extends AppCompatActivity {
                 int ring = cursor.getInt(cursor.getColumnIndex("ring"));
                 int state = cursor.getInt(cursor.getColumnIndex("state"));
                 Alarm alarm = new Alarm(id, hour, minutes, daysofweek, vibrate == 1 ? true : false, ring == 1 ? true : false, state == 1 ? true : false);
+//                public Alarm(int id, int hour, int minutes, int daysofweek, boolean vibrate, boolean ring, boolean state)
                 alarmList.add(alarm);
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
         alarmAdapter = new AlarmAdapter(this, alarmList);
         listView.setAdapter(alarmAdapter);
     }

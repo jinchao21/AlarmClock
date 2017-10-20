@@ -1,26 +1,40 @@
 package com.example.ljc.alarmclock;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.example.ljc.alarmclock.database.AlarmDataHelper;
+import com.example.ljc.alarmclock.model.Alarm;
+
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by ljc on 17-10-19.
  */
 
-public class AlarmService extends Service{
+public class AlarmService extends Service {
 
     private AlarmManager alarmManager;
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
     private Bundle bundle;
     private Intent intent;
+    private AlarmDataHelper dbHelper;
+    private List<Alarm> alarmList;
 
     @Nullable
     @Override
@@ -29,142 +43,133 @@ public class AlarmService extends Service{
     }
 
     @Override
-    public int onStartCommand(Intent intent,  int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        bundle = intent.getExtras();
+        int id = bundle.getInt("_id");
+        Log.d("asd", "alarm service id = " + Integer.toString(id));
+        Intent intentRing = new Intent(this, RingActivity.class);
+        intentRing.putExtras(bundle);
+        intentRing.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intentRing);
+
+        dbHelper = new AlarmDataHelper(this, "alarm.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query("alarms", null, null, null, null, null, null);
+        ContentValues values = new ContentValues();
+        values.put("state", 0);
+        db.update("alarms", values, "_id =" + id, null);
+
+        getReAlarm();
+        cursor.close();
+        db.close();
+
         return super.onStartCommand(intent, flags, startId);
     }
-}
 
-//public class AlarmClockService extends Service {
+    public void getReAlarm() {
+
+        dbHelper = new AlarmDataHelper(this, "alarms.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query("alarms", null, null, null, null, null, null);
+
+        int alarmId;
+        long time;
+        long atime;
+        long ctime = System.currentTimeMillis();
+        atime = ctime;
+        if (cursor.moveToNext()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                int hour = cursor.getInt(cursor.getColumnIndex("hour"));
+                int minutes = cursor.getInt(cursor.getColumnIndex("minutes"));
+                int daysofweek = cursor.getInt(cursor.getColumnIndex("daysofweek"));
+                int vibrate = cursor.getInt(cursor.getColumnIndex("vibrate"));
+                int ring = cursor.getInt(cursor.getColumnIndex("ring"));
+                int state = cursor.getInt(cursor.getColumnIndex("state"));
+
+                Calendar calendar = Calendar.getInstance();
+                int dk = calendar.get(Calendar.DAY_OF_WEEK);
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minutes);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                time = calendar.getTimeInMillis();
+
+//                int a = daysofweek;
+//                String[] days = {"一", "二", "三", "四", "五", "六", "天", "只响一次"};
+//                String s5 = "";
+//                if (daysofweek==0) {
+//                    return days[7] + state;
+//                } else {
 //
-//    public static final String TAG = "AlarmClockService";
-//    public static final String Alarm_CLOCK_RING_ONLY_ONCE = "只响一次";
-//    private AlarmManager alarmManager;
-//    private MediaPlayer mediaPlayer;
-//    private Vibrator vibrator;
-//    private Bundle bundle;
-//    private Intent toReceiverIntent;
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        Log.i(TAG, "--------------onBind----------");
-//        return new AlarmClockRingServiceProvider();
-//    }
-//
-//    @Override
-//    public void onCreate() {
-//        Log.i(TAG, "--------------onCreate----------");
-//        super.onCreate();
-//        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//        vibrator=(Vibrator)getSystemService(Service.VIBRATOR_SERVICE);
-//
-//    }
-//
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        Log.i(TAG, "--------------onStartCommand----------");
-//        bundle = intent.getExtras();
-//        //在闹铃界面点击 暂停再响 或 关闭 时 发送的意图
-//        toReceiverIntent =  new Intent(this , AlarmClockReceiver.class);
-//        toReceiverIntent.setAction("cn.edu.usts.cardhelper.alarmclock");
-//        toReceiverIntent.putExtras(bundle);
-//
-//        //发送到 闹铃界面的意图
-//        Intent alarmClockRingintent = new Intent(this, AlarmClockRingActivity.class);
-//        alarmClockRingintent.putExtras(bundle);
-//        alarmClockRingintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(alarmClockRingintent);
-//
-//        String ringInfo = bundle.getString("ringInfo");
-//        Uri audioUri = Uri.parse(ringInfo.split("##")[1]);
-//        if( ! audioUri.equals("无")){
-//            try {
-//                mediaPlayer = new MediaPlayer();
-//                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//                mediaPlayer.setLooping(true);
-//                mediaPlayer.setDataSource(this, audioUri);
-//                mediaPlayer.prepareAsync();
-//                mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-//
-//                    @Override
-//                    public void onPrepared(MediaPlayer mp) {
-//                        mediaPlayer.start();
+//                    for (int i = 0; i < 7; i++) {
+//                        if (a % 10 == 1)
+//                            s5 = days[6 - i] + " " + s5;
+//                        a = a / 10;
 //                    }
-//                });
-//            }catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        int isShake = bundle.getInt("isShake");
-//        if(isShake == 1){
-//            vibrator.vibrate(new long[] { 0, 1000, 1000, 1000, 1000 }, 0);
-//        }
-//        return super.onStartCommand(intent, flags, startId);
+//                    return s5 + state;
+//                }
+//
+                if (state == 1) {
+                    for (int i = 1; i < 8; i++) {
+                        if (daysofweek % 10 == 1 && i >= dk) {
+                            if (time + (i - dk) * 24 * 60 * 60 * 1000 > ctime && atime > time)
+                                atime = time + (i - dk) * 24 * 60 * 60 * 1000;
+                            Log.d("asd", "atime 1 = " + Long.toString(atime));
+                            daysofweek = daysofweek / 10;
+                        }else if (daysofweek % 10 == 1 && i < dk){
+                            if (time + (7-dk+i) * 24 * 60 * 60 * 1000 > ctime && atime > time)
+                                atime = time + (7-dk+i) * 24 * 60 * 60 * 1000;
+                            Log.d("asd", "atime 2 = " + Long.toString(atime));
+                            daysofweek = daysofweek / 10;
+                        }
+                    }
+                }
+
+                Alarm alarm = new Alarm(id, hour, minutes, daysofweek, vibrate == 1 ? true : false, ring == 1 ? true : false, state == 1 ? true : false);
+//                public Alarm(int id, int hour, int minutes, int daysofweek, boolean vibrate, boolean ring, boolean state)
+                alarmList.add(alarm);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+    }
+//    public void setOnceAlarm() {
+//        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        Cursor cursor = db.query("alarms", null, null, null, null, null, null);
+//        cursor.moveToLast();
+//        int id = cursor.getInt(cursor.getColumnIndex("_id"));
+//        cursor.close();
+//        db.close();
+//
+//        Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
+//        intent.setAction("com.example.ljc.alarmclock.AlarmBroadcastReceiver");
+//
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("_id", id);
+//        Log.d("asd", "new alarm id = " + Integer.toString(id));
+//        bundle.putInt("hour", hour);
+//        bundle.putInt("minutes", minutes);
+//        bundle.putInt("daysofweek", daysofweek);
+//        bundle.putInt("vibrate", vibrate);
+//        bundle.putInt("ring", ring);
+//        bundle.putInt("state", state);
+//
+//        intent.putExtras(bundle);
+//
+//        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.set(Calendar.HOUR_OF_DAY, hour);
+//        calendar.set(Calendar.MINUTE, minutes);
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.MILLISECOND, 0);
+////        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1, pi);
+////        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000*30, pi);
+//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, 20*1000, pi);
+//
+////        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+);
 //    }
-//
-//    @Override
-//    public boolean onUnbind(Intent intent) {
-//        Log.i(TAG, "--------------onUnbind----------");
-//        return super.onUnbind(intent);
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        Log.i(TAG, "--------------onDestroy----------");
-//        super.onDestroy();
-//    }
-//
-//    public void stopMusic(){
-//        if(mediaPlayer != null && mediaPlayer.isPlaying()){
-//            mediaPlayer.stop();
-//            mediaPlayer.release();
-//            mediaPlayer = null;
-//        }
-//    }
-//
-//    public void stopVibrator(){
-//        if(vibrator != null ){
-//            vibrator.cancel();
-//            vibrator = null;
-//        }
-//    }
-//
-//    //服务要暴露方法 必须要有一个中间人
-//    private class AlarmClockRingServiceProvider extends Binder implements IAlarmClockRingServiceProvider{
-//
-//        @Override
-//        public void pause5MinRing() {
-//            stopMusic();
-//            stopVibrator();
-//            int alarmClockId = bundle.getInt("alarmClockId");
-//            PendingIntent pi = PendingIntent.getBroadcast(AlarmClockService.this, alarmClockId, toReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+5*60*1000, pi);
-//            Log.i(TAG, "----------5分钟后响铃的广播发送完毕！-----------");
-//        }
-//
-//        @Override
-//        public void close() {
-//            stopMusic();
-//            stopVibrator();
-//            String repeatCycle = bundle.getString("repeatCycle");
-//            int alarmClockId = bundle.getInt("alarmClockId");
-//            int hour = bundle.getInt("hour");
-//            int minute = bundle.getInt("minute");
-//            if(repeatCycle.equals(Alarm_CLOCK_RING_ONLY_ONCE)){     //只响一次的闹钟  --> 取消该广播，更新数据库
-//                alarmManager.cancel(PendingIntent.getBroadcast(AlarmClockService.this, alarmClockId, toReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-//                AlarmClockDao dao = new AlarmClockDao(AlarmClockService.this);
-//                dao.updataState(alarmClockId, 0);
-//                Log.i(TAG, "--只响一次的闹钟广播已取消，数据库更新完毕！！-----");
-//            }else{          //  --> 发送下一次闹钟的广播
-//                int dTime = NextRingTimeProvider.showRingTimeByRepeatCycle(repeatCycle, hour, minute);
-//                PendingIntent pi = PendingIntent.getBroadcast(AlarmClockService.this, alarmClockId, toReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//                alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+dTime, pi);
-//                Log.i(TAG, "--距离下一次闹钟的剩余时间为"+RingTextUtil.showDTimeText(dTime)+"-----");
-//            }
-//        }
-//
-//        @Override
-//        public void oneMinClose() {
-//            pause5MinRing();
-//        }
-//
-//    }
-//}
+}
