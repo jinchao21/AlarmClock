@@ -1,14 +1,10 @@
 package com.example.ljc.alarmclock;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -16,6 +12,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.example.ljc.alarmclock.database.AlarmDataHelper;
@@ -36,11 +33,22 @@ public class RingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
         cancel_ring = (Button) findViewById(R.id.cancel_ring);
         Bundle bundle = this.getIntent().getExtras();
         final int id = bundle.getInt("_id");
         final int isVibrate = bundle.getInt("vibrate");
         final int isRing = bundle.getInt("ring");
+
+        dbHelper = new AlarmDataHelper(this, "alarm.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query("alarms", null, null, null, null, null, null);
+        ContentValues values = new ContentValues();
+        values.put("state", 0);
+        db.update("alarms", values, "_id =" + id, null);
+        cursor.close();
+        db.close();
 
         Log.d("asd", "alarm ring id = " + Integer.toString(id));
 

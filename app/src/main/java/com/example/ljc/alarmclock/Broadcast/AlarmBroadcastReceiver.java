@@ -1,4 +1,4 @@
-package com.example.ljc.alarmclock;
+package com.example.ljc.alarmclock.Broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.ljc.alarmclock.Service.AlarmService;
 
 /**
  * Created by ljc on 17-10-19.
@@ -16,7 +18,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Toast.makeText(context, "闹钟添加成功", Toast.LENGTH_SHORT).show();
-        if (action.equals("com.example.ljc.alarmclock.AlarmBroadcastReceiver")){
+        if (action.equals("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver")){
             Bundle bundle = intent.getExtras();
             int id = bundle.getInt("_id");
 //            int hour = bundle.getInt("hour");

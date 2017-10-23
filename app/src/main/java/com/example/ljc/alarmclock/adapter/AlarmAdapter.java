@@ -1,9 +1,15 @@
 package com.example.ljc.alarmclock.adapter;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +19,13 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver;
 import com.example.ljc.alarmclock.R;
+import com.example.ljc.alarmclock.Service.AlarmService;
 import com.example.ljc.alarmclock.database.AlarmDataHelper;
 import com.example.ljc.alarmclock.model.Alarm;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -31,8 +40,10 @@ public class AlarmAdapter extends BaseAdapter {
 
     private AlarmDataHelper dbHelper;
 
+    private Context context;
 
     public AlarmAdapter(Context context, List<Alarm> alarmList){
+        this.context = context;
         this.alarmList = alarmList;
         this.mInflater = LayoutInflater.from(context);
         dbHelper = new AlarmDataHelper(context, "alarm.db", null, 1);
@@ -81,7 +92,10 @@ public class AlarmAdapter extends BaseAdapter {
 
         holder.alarmState.setChecked(alarm.isState());
         final int id = alarmList.get(position).id;
+
+        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         holder.alarmState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
@@ -91,6 +105,13 @@ public class AlarmAdapter extends BaseAdapter {
                     db.update("alarms", values, "_id ="+id,null);
                     db.close();
                     alarmList.get(position).setState(true);
+                    Log.d("asd", "ischecked id = true");
+
+                    Intent intent = new Intent(context, AlarmService.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("_id", 0);
+                    intent.putExtras(bundle);
+                    context.startService(intent);
                 }else {
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
                     ContentValues values = new ContentValues();
@@ -98,6 +119,12 @@ public class AlarmAdapter extends BaseAdapter {
                     db.update("alarms", values, "_id ="+id,null);
                     db.close();
                     alarmList.get(position).setState(false);
+
+                    Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+                    intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
+                    PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    pi.cancel();
+//                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 20000, pi);
                 }
             }
         });
@@ -111,3 +138,20 @@ public class AlarmAdapter extends BaseAdapter {
         Switch alarmState;
     }
 }
+
+//    Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
+//        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("_id", id);
+//                Log.d("asd", "new alarm id = " + Integer.toString(id));
+//                bundle.putInt("hour", hour);
+//                bundle.putInt("minutes", minutes);
+//                bundle.putInt("daysofweek", daysofweek);
+//                bundle.putInt("vibrate", vibrate);
+//                bundle.putInt("ring", ring);
+//                bundle.putInt("state", state);
+//
+//                intent.putExtras(bundle);
+//
+//                PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);

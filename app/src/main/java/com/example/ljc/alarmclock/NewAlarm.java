@@ -21,6 +21,7 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver;
 import com.example.ljc.alarmclock.database.AlarmDataHelper;
 
 import java.util.Calendar;
@@ -226,7 +227,7 @@ public class NewAlarm extends AppCompatActivity {
         db.close();
 
         Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-        intent.setAction("com.example.ljc.alarmclock.AlarmBroadcastReceiver");
+        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
 
         Bundle bundle = new Bundle();
         bundle.putInt("_id", id);
@@ -242,6 +243,7 @@ public class NewAlarm extends AppCompatActivity {
 
         PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+//        pi.cancel();
         Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -254,7 +256,7 @@ public class NewAlarm extends AppCompatActivity {
         Log.d("asd", "calendar2 = " + System.currentTimeMillis());
 //        if (calendar.getTimeInMillis() > System.currentTimeMillis())
 //            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
 //        else
 //            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 24 * 60 * 60 * 1000  + calendar.getTimeInMillis(), pi);
 

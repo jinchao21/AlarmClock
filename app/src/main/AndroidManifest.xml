@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".NewAlarm"/>
 
-        <receiver android:name=".AlarmBroadcastReceiver"
+        <receiver android:name=".Broadcast.AlarmBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -29,11 +29,18 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".AlarmService"
+        <service android:name=".Service.AlarmService"
             android:enabled="true"
             android:exported="true">
 
         </service>
+
+
+        <receiver android:name=".Broadcast.RebootReceiver" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <activity android:name=".RingActivity"/>
     </application>
 
