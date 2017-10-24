@@ -208,7 +208,6 @@ public class NewAlarm extends AppCompatActivity {
                 values.put("ring", ring);
                 values.put("state", state);
                 db.insert("alarms", null, values);
-                Toast.makeText(NewAlarm.this, "闹钟添加成功", Toast.LENGTH_SHORT).show();
                 setOnceAlarm();
                 finish();
             }
