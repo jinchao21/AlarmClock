@@ -40,6 +40,12 @@
             <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
+            <intent-filter >
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+                <data android:scheme="file" >
+                </data>
+            </intent-filter>
         </receiver>
         <activity android:name=".RingActivity"/>
     </application>
