@@ -138,20 +138,3 @@ public class AlarmAdapter extends BaseAdapter {
         Switch alarmState;
     }
 }
-
-//    Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-//        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
-//
-//                Bundle bundle = new Bundle();
-//                bundle.putInt("_id", id);
-//                Log.d("asd", "new alarm id = " + Integer.toString(id));
-//                bundle.putInt("hour", hour);
-//                bundle.putInt("minutes", minutes);
-//                bundle.putInt("daysofweek", daysofweek);
-//                bundle.putInt("vibrate", vibrate);
-//                bundle.putInt("ring", ring);
-//                bundle.putInt("state", state);
-//
-//                intent.putExtras(bundle);
-//
-//                PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);

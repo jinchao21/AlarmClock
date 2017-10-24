@@ -243,23 +243,39 @@ public class NewAlarm extends AppCompatActivity {
 
         PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-//        pi.cancel();
         Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minutes);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1, pi);
-//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000*30, pi);
         Log.d("asd", "calendar1 = " + calendar.getTimeInMillis());
         Log.d("asd", "calendar2 = " + System.currentTimeMillis());
-//        if (calendar.getTimeInMillis() > System.currentTimeMillis())
-//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
-//        else
-//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 24 * 60 * 60 * 1000  + calendar.getTimeInMillis(), pi);
 
-//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+);
+        long atime = System.currentTimeMillis() + 2 * 7 * 24 * 60 * 60 * 1000;
+        long time = calendar.getTimeInMillis();
+        long ctime = System.currentTimeMillis();
+        int dk = calendar.get(Calendar.DAY_OF_WEEK);
+        if (daysofweek == 0) {
+            if (time <= ctime)
+                atime = time + 7 * 24 * 60 * 60 * 1000;
+            else
+                atime = time;
+        } else {
+            for (int i = 1; i < 8; i++) {
+                if (daysofweek % 10 == 1) {
+                    long time1 = time;
+                    time1 = time1 + (8 - i - dk + 1) * 24 * 60 * 60 * 1000;
+                    if (time1 <= ctime) {
+                        time1 = time1 + 7 * 24 * 60 * 60 * 1000;
+                        if (time1 <= atime)
+                            atime = time1;
+                    } else if (time1 <= atime)
+                        atime = time1;
+                }
+                daysofweek = daysofweek / 10;
+                Log.d("asd", "daysofweek1 = " + daysofweek);
+            }
+        }
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atime, pi);
     }
 }
