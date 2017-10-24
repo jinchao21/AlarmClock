@@ -23,11 +23,8 @@ import com.example.ljc.alarmclock.RingActivity;
 import com.example.ljc.alarmclock.database.AlarmDataHelper;
 import com.example.ljc.alarmclock.model.Alarm;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,12 +35,8 @@ import java.util.Map;
 public class AlarmService extends Service {
 
     private AlarmManager alarmManager;
-    private MediaPlayer mediaPlayer;
-    private Vibrator vibrator;
     private Bundle bundle;
-    private Intent intent;
     private AlarmDataHelper dbHelper;
-    private List<Alarm> alarmList;
 
     @Nullable
     @Override
@@ -97,12 +90,17 @@ public class AlarmService extends Service {
 
 //                Log.d("asd", "getReAlarm id = " + Integer.toString(id) + " " + Integer.toString(hour) + " " + Integer.toString(minutes) + " " + Integer.toString(daysofweek) + " " + Integer.toString(state));
                 Calendar calendar = Calendar.getInstance();
-                int dk = calendar.get(Calendar.DAY_OF_WEEK); //Calendar.DAY_OF_WEEK需要根据本地化设置的不同而确定是否需要 “-1”
+                int dk = calendar.get(Calendar.DAY_OF_WEEK); //Calendar.DAY_OF_WEEK以周日为起，值为1
                 calendar.set(Calendar.HOUR_OF_DAY, hour);
                 calendar.set(Calendar.MINUTE, minutes);
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 time = calendar.getTimeInMillis();
+
+                if (dk > 2)
+                    dk = dk - 1;
+                else
+                    dk = 7;
 
                 Log.d("asd", "time = " + Long.toString(time));
                 if (state == 1) {  //状态是否为开
@@ -124,7 +122,7 @@ public class AlarmService extends Service {
                         for (int i = 1; i < 8; i++) {   //用1111111 表示相应星期几闹钟状态，1表示当天有闹钟，0则表示无
                             if (daysofweek % 10 == 1) {  //取余判断当天是否有闹钟
                                 long time1 = time;  //设置time1 为临时变量，防止time时间改变
-                                time1 = time1 + (8 - i - dk + 1) * 24 * 60 * 60 * 1000;  //8-i 表示星期几 当i=5时，表示星期三，dk表示当前星期几
+                                time1 = time1 + (8 - i - dk) * 24 * 60 * 60 * 1000;  //8-i 表示星期几 当i=5时，表示星期三，dk表示当前星期几
                                 if (time1 < ctime) { //如果时间小于当前时间则为下星期提醒
                                     time1 = time1 + 7 * 24 * 60 * 60 * 1000;
                                     if (time1 < atime) { //并且时间小于目标时间
@@ -200,6 +198,10 @@ public class AlarmService extends Service {
                 long time = calendar.getTimeInMillis();
                 long ctime = System.currentTimeMillis();
                 int dk = calendar.get(Calendar.DAY_OF_WEEK);
+                if (dk > 2)
+                    dk = dk - 1;
+                else
+                    dk = 7;
                 if (daysofweek == 0) {
                     if (time <= ctime)
                         atime = time + 7 * 24 * 60 * 60 * 1000;
@@ -209,7 +211,7 @@ public class AlarmService extends Service {
                     for (int i = 1; i < 8; i++) {
                         if (daysofweek % 10 == 1) {
                             long time1 = time;
-                            time1 = time1 + (8 - i - dk + 1) * 24 * 60 * 60 * 1000;
+                            time1 = time1 + (8 - i - dk) * 24 * 60 * 60 * 1000;
                             if (time1 <= ctime) {
                                 time1 = time1 + 7 * 24 * 60 * 60 * 1000;
                                 if (time1 <= atime)

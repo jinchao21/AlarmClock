@@ -255,6 +255,10 @@ public class NewAlarm extends AppCompatActivity {
         long time = calendar.getTimeInMillis();
         long ctime = System.currentTimeMillis();
         int dk = calendar.get(Calendar.DAY_OF_WEEK);
+        if (dk > 2)
+            dk = dk - 1;
+        else
+            dk = 7;
         if (daysofweek == 0) {
             if (time <= ctime)
                 atime = time + 7 * 24 * 60 * 60 * 1000;
@@ -264,7 +268,7 @@ public class NewAlarm extends AppCompatActivity {
             for (int i = 1; i < 8; i++) {
                 if (daysofweek % 10 == 1) {
                     long time1 = time;
-                    time1 = time1 + (8 - i - dk + 1) * 24 * 60 * 60 * 1000;
+                    time1 = time1 + (8 - i - dk) * 24 * 60 * 60 * 1000;
                     if (time1 <= ctime) {
                         time1 = time1 + 7 * 24 * 60 * 60 * 1000;
                         if (time1 <= atime)
@@ -277,5 +281,6 @@ public class NewAlarm extends AppCompatActivity {
             }
         }
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atime, pi);
+        Toast.makeText(this, "闹钟添加成功", Toast.LENGTH_SHORT).show();
     }
 }
