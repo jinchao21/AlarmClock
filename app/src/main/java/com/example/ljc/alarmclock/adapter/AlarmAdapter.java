@@ -93,7 +93,8 @@ public class AlarmAdapter extends BaseAdapter {
         holder.alarmState.setChecked(alarm.isState());
         final int id = alarmList.get(position).id;
 
-        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        //在闹钟状态的Switch上设置监听，根据Switch状态进行数据库读写以及发送闹钟意图
+//        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         holder.alarmState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override

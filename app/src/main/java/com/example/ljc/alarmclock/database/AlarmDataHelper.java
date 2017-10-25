@@ -15,6 +15,16 @@ public class AlarmDataHelper extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
+    /*id主键
+    * hour小时 （24小时制）
+    * minutes 分钟
+    * daysofweek 每周重复
+    * vibrate 振动状态
+    * ring 响铃状态
+    * state 闹钟状态
+    *
+    * 因SQLite中不能存储boolean类型，故用Int类型代替之，并用双目运算？：进行转换
+    * */
     @Override
     public void onCreate(SQLiteDatabase db) {
 

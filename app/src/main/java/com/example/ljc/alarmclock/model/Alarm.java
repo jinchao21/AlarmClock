@@ -51,6 +51,11 @@ public class Alarm {
         this.minutes = minutes;
     }
 
+    /*
+    * 此处将闹钟列表显示的一，二，三，，天 与数据库中1,2,3，，7对应
+    * 使用7位数如1111111存储每周重复状态
+    * 使用取余操作判断每周中星期×是否重复
+    * */
     public String getDaysofweek() {
         int a = daysofweek;
         String[] days = {"一", "二", "三", "四", "五", "六", "天", "只响一次"};

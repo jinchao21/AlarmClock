@@ -97,6 +97,7 @@ public class AlarmService extends Service {
                 calendar.set(Calendar.MILLISECOND, 0);
                 time = calendar.getTimeInMillis();
 
+                //Calendar.DAY_OF_WEEK中1234567分别表示周日，周一至周六，此处问题当时没考虑到，故用以下判断完成对应
                 if (dk > 2)
                     dk = dk - 1;
                 else

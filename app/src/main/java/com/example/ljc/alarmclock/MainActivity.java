@@ -29,9 +29,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
-    private TextView ymdw;
-    private Button button;
-    private ListView listView;
+    private TextView ymdw;//主界面时间显示
+    private Button button;//新建闹钟
+    private ListView listView;//闹钟列表
 
 
     private AlarmAdapter alarmAdapter;
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("asd", "System = " + System.currentTimeMillis());
 
+        //使用Handler更新时间
         Handler mTimeHandler = new Handler() {
             public void handleMessage(Message msg) {
                 if (msg.what == 0) {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //闹钟列表长按删除
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -101,11 +103,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //数据库执行删除
     public void deleteAlarm(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete("alarms", "_id =" + id, null);
     }
 
+    //初始化闹钟列表数据
+    //SQLite中不能存储boolean类型，故用Int数据1，0存储对应boolean类型并用双目运算？：判断之
     public void initListData() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query("alarms", null, null, null, null, null, null);
@@ -131,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(alarmAdapter);
     }
 
+    //闹钟当前界面不可见时，重现则更新，主要针对新建闹钟后返回以及闹钟响铃后状态改变
     @Override
     protected void onResume() {
         super.onResume();

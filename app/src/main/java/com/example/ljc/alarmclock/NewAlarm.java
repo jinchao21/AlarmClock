@@ -92,7 +92,12 @@ public class NewAlarm extends AppCompatActivity {
             }
         });
 
-
+        /*
+        * 使用七位数表示闹钟重复状态从1至7位分别对应星期一至星期天
+        * 如1111111表示每天都响
+        * 0表示只响一次
+        * 1000000表示只周一重复
+        * */
         CbMonday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -187,6 +192,7 @@ public class NewAlarm extends AppCompatActivity {
             }
         });
 
+        //点击取消返回主界面
         btCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,6 +200,7 @@ public class NewAlarm extends AppCompatActivity {
             }
         });
 
+        //点击保存，先将数据写入数据库，而后设置闹钟，返回主界面
         btSave.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -215,6 +222,7 @@ public class NewAlarm extends AppCompatActivity {
     }
 
 
+    //设置一次闹钟，重复闹钟也只设置一次，取最近一次闹钟设置，之后其他闹钟会在service中进行设置
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setOnceAlarm() {
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
@@ -228,6 +236,7 @@ public class NewAlarm extends AppCompatActivity {
         Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
         intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
 
+        //使用intent传递bundle数据
         Bundle bundle = new Bundle();
         bundle.putInt("_id", id);
         Log.d("asd", "new alarm id = " + Integer.toString(id));
@@ -240,6 +249,7 @@ public class NewAlarm extends AppCompatActivity {
 
         intent.putExtras(bundle);
 
+        //延时广播
         PendingIntent pi = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
