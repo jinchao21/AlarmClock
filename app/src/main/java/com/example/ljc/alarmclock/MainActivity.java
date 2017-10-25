@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ljc.alarmclock.Service.AlarmService;
 import com.example.ljc.alarmclock.adapter.AlarmAdapter;
 import com.example.ljc.alarmclock.database.AlarmDataHelper;
 import com.example.ljc.alarmclock.model.Alarm;
@@ -47,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
         ymdw = (TextView) findViewById(R.id.ymdw);
         button = (Button) findViewById(R.id.button);
         listView = (ListView) findViewById(R.id.listView);
+
+
+        //如应用被关闭，闹钟启动时检查最近闹钟
+        Bundle bundle = new Bundle();
+        bundle.putInt("_id", 0);
+        Intent intent = new Intent(this, AlarmService.class);
+        intent.putExtras(bundle);
+        startService(intent);
 
         Log.d("asd", "System = " + System.currentTimeMillis());
 

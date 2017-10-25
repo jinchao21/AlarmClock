@@ -84,8 +84,8 @@ public class AlarmService extends Service {
                 int hour = cursor.getInt(cursor.getColumnIndex("hour"));
                 int minutes = cursor.getInt(cursor.getColumnIndex("minutes"));
                 int daysofweek = cursor.getInt(cursor.getColumnIndex("daysofweek"));
-                int vibrate = cursor.getInt(cursor.getColumnIndex("vibrate"));
-                int ring = cursor.getInt(cursor.getColumnIndex("ring"));
+//                int vibrate = cursor.getInt(cursor.getColumnIndex("vibrate"));
+//                int ring = cursor.getInt(cursor.getColumnIndex("ring"));
                 int state = cursor.getInt(cursor.getColumnIndex("state"));
 
 //                Log.d("asd", "getReAlarm id = " + Integer.toString(id) + " " + Integer.toString(hour) + " " + Integer.toString(minutes) + " " + Integer.toString(daysofweek) + " " + Integer.toString(state));
