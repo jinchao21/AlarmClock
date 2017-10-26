@@ -16,8 +16,8 @@ import com.example.ljc.alarmclock.Service.AlarmService;
 public class AlarmBroadcastReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (action.equals("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver")){
+//        String action = intent.getAction();
+//        if (action.equals("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver")){
             Bundle bundle = intent.getExtras();
 //            int id = bundle.getInt("_id");
 //            Log.d("asd", "broadcast id = " + Integer.toString(id));
@@ -25,6 +25,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver{
             intents.putExtras(bundle);
             intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startService(intents);
-        }
+//        }
     }
 }

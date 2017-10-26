@@ -38,6 +38,8 @@ public class AlarmService extends Service {
     private Bundle bundle;
     private AlarmDataHelper dbHelper;
 
+    private static final String TAG = "AlarmService";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,7 +75,7 @@ public class AlarmService extends Service {
         long atime = System.currentTimeMillis() + 2 * 7 * 24 * 60 * 60 * 1000; //最短闹钟时间
         long ctime = System.currentTimeMillis();  //现在时间
 
-        Log.d("asd", "ctime = " + Long.toString(ctime));
+        Log.d(TAG, "ctime = " + Long.toString(ctime));
 //        Log.d("asd", "getReAlarm  =  ok");
         dbHelper = new AlarmDataHelper(this, "alarm.db", null, 1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -103,11 +105,11 @@ public class AlarmService extends Service {
                 else
                     dk = 7;
 
-                Log.d("asd", "time = " + Long.toString(time));
+                Log.d(TAG, "time = " + Long.toString(time));
                 if (state == 1) {  //状态是否为开
                     if (daysofweek == 0) {    //是否重复闹钟
                         if (time <= ctime) {  //不是重复闹钟，并且时间小于当前时间
-                            time = time + 7 * 24 * 60 * 60 * 1000;
+                            time = time + 24 * 60 * 60 * 1000;
                             if (time < atime) {  //时间是否小于目标时间
                                 atime = time;
                                 alarmId = id;
@@ -118,7 +120,7 @@ public class AlarmService extends Service {
                                 alarmId = id;
                             }
                         }
-                        Log.d("asd", "atime  = " + Long.toString(atime) + " daysofweek = " + daysofweek + " id = " + id);
+                        Log.d(TAG, "atime  = " + Long.toString(atime) + " daysofweek = " + daysofweek + " id = " + id);
                     } else {    //是重复闹钟
                         for (int i = 1; i < 8; i++) {   //用1111111 表示相应星期几闹钟状态，1表示当天有闹钟，0则表示无
                             if (daysofweek % 10 == 1) {  //取余判断当天是否有闹钟
@@ -138,7 +140,7 @@ public class AlarmService extends Service {
                                 }
                             }
 
-                            Log.d("asd", "atime  = " + Long.toString(atime) + " daysofweek = " + daysofweek + " id = " + id + " i = " + i);
+                            Log.d(TAG, "atime  = " + Long.toString(atime) + " daysofweek = " + daysofweek + " id = " + id + " i = " + i);
                             daysofweek = daysofweek / 10;//获取前一天是否有闹钟
                         }
                     }
@@ -148,14 +150,14 @@ public class AlarmService extends Service {
 
         cursor.close();
         db.close();
-        Log.d("asd", "alarmId  = " + Long.toString(alarmId));
+        Log.d(TAG, "alarmId  = " + Long.toString(alarmId));
 
         return alarmId;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setOnceAlarm(int id) {
-        Log.d("asd", "setOnceAlarm  =  ok" + id);
+        Log.d(TAG, "setOnceAlarm  =  ok" + id);
         if (id > 0) {
             alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             dbHelper = new AlarmDataHelper(this, "alarm.db", null, 1);
@@ -173,7 +175,7 @@ public class AlarmService extends Service {
                 int ring = cursor.getInt(cursor.getColumnIndex("ring"));
                 int state = cursor.getInt(cursor.getColumnIndex("state"));
                 Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-                intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
+//                intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
 
                 Bundle bundle = new Bundle();
                 bundle.putInt("_id", id);
@@ -205,7 +207,7 @@ public class AlarmService extends Service {
                     dk = 7;
                 if (daysofweek == 0) {
                     if (time <= ctime)
-                        atime = time + 7 * 24 * 60 * 60 * 1000;
+                        atime = time + 24 * 60 * 60 * 1000;
                     else
                         atime = time;
                 } else {

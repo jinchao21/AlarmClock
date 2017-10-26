@@ -28,6 +28,7 @@ public class RingActivity extends Activity {
     private AlarmDataHelper dbHelper;
 
 
+    private static final String TAG = "RingActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +55,7 @@ public class RingActivity extends Activity {
             cursor.close();
             db.close();
         }
-        Log.d("asd", "alarm ring id = " + Integer.toString(id));
+        Log.d(TAG, "alarm ring id = " + Integer.toString(id));
 
         //获取振动
         if (isVibrate == 1) {

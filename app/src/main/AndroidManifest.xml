@@ -32,19 +32,14 @@
         <service android:name=".Service.AlarmService"
             android:enabled="true"
             android:exported="true">
-
         </service>
 
 
-        <receiver android:name=".Broadcast.RebootReceiver" >
-            <intent-filter android:priority="1000" >
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
+        <receiver android:name=".Broadcast.RebootReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter >
-                <action android:name="android.intent.action.MEDIA_MOUNTED" />
-                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
-                <data android:scheme="file" >
-                </data>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <activity android:name=".RingActivity"/>

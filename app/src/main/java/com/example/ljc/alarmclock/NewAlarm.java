@@ -54,6 +54,8 @@ public class NewAlarm extends AppCompatActivity {
 
     private AlarmDataHelper dbHelper;
 
+    private static final String TAG = "NewAlarm";
+
     public NewAlarm() {
     }
 
@@ -88,7 +90,7 @@ public class NewAlarm extends AppCompatActivity {
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 NewAlarm.this.hour = hourOfDay;
                 NewAlarm.this.minutes = minute;
-                Log.d("asd", "time  " + Integer.toString(NewAlarm.this.hour) + ":" + Integer.toString(NewAlarm.this.minutes));
+                Log.d(TAG, "time  " + Integer.toString(NewAlarm.this.hour) + ":" + Integer.toString(NewAlarm.this.minutes));
             }
         });
 
@@ -105,7 +107,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 1000000;
                 else
                     daysofweek = daysofweek - 1000000;
-                Log.d("asd", "1  " + Integer.toString(daysofweek));
+                Log.d(TAG, "1  " + Integer.toString(daysofweek));
             }
         });
         CbTuesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -115,7 +117,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 100000;
                 else
                     daysofweek = daysofweek - 100000;
-                Log.d("asd", "2  " + Integer.toString(daysofweek));
+                Log.d(TAG, "2  " + Integer.toString(daysofweek));
             }
         });
         CbWednesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -125,7 +127,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 10000;
                 else
                     daysofweek = daysofweek - 10000;
-                Log.d("asd", "3  " + Integer.toString(daysofweek));
+                Log.d(TAG, "3  " + Integer.toString(daysofweek));
             }
         });
         CbThursday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -135,7 +137,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 1000;
                 else
                     daysofweek = daysofweek - 1000;
-                Log.d("asd", "4  " + Integer.toString(daysofweek));
+                Log.d(TAG, "4  " + Integer.toString(daysofweek));
             }
         });
         CbFriday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -145,7 +147,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 100;
                 else
                     daysofweek = daysofweek - 100;
-                Log.d("asd", "5  " + Integer.toString(daysofweek));
+                Log.d(TAG, "5  " + Integer.toString(daysofweek));
             }
         });
         CbSaturday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -155,7 +157,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 10;
                 else
                     daysofweek = daysofweek - 10;
-                Log.d("asd", "6  " + Integer.toString(daysofweek));
+                Log.d(TAG, "6  " + Integer.toString(daysofweek));
             }
         });
         CbSunday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -165,7 +167,7 @@ public class NewAlarm extends AppCompatActivity {
                     daysofweek = daysofweek + 1;
                 else
                     daysofweek = daysofweek - 1;
-                Log.d("asd", "7  " + Integer.toString(daysofweek));
+                Log.d(TAG, "7  " + Integer.toString(daysofweek));
             }
         });
 
@@ -177,7 +179,7 @@ public class NewAlarm extends AppCompatActivity {
                     ring = 1;
                 else
                     ring = 0;
-                Log.d("asd", "ring  " + Integer.toString(ring));
+                Log.d(TAG, "ring  " + Integer.toString(ring));
             }
         });
 
@@ -188,7 +190,7 @@ public class NewAlarm extends AppCompatActivity {
                     vibrate = 1;
                 else
                     vibrate = 0;
-                Log.d("asd", "vibrate  " + Integer.toString(vibrate));
+                Log.d(TAG, "vibrate  " + Integer.toString(vibrate));
             }
         });
 
@@ -234,12 +236,12 @@ public class NewAlarm extends AppCompatActivity {
         db.close();
 
         Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
+//        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
 
         //使用intent传递bundle数据
         Bundle bundle = new Bundle();
         bundle.putInt("_id", id);
-        Log.d("asd", "new alarm id = " + Integer.toString(id));
+        Log.d(TAG, "new alarm id = " + Integer.toString(id));
         bundle.putInt("hour", hour);
         bundle.putInt("minutes", minutes);
         bundle.putInt("daysofweek", daysofweek);
@@ -270,7 +272,7 @@ public class NewAlarm extends AppCompatActivity {
             dk = 7;
         if (daysofweek == 0) {
             if (time <= ctime)
-                atime = time + 7 * 24 * 60 * 60 * 1000;
+                atime = time + 24 * 60 * 60 * 1000;
             else
                 atime = time;
         } else {
@@ -286,7 +288,7 @@ public class NewAlarm extends AppCompatActivity {
                         atime = time1;
                 }
                 daysofweek = daysofweek / 10;
-                Log.d("asd", "daysofweek1 = " + daysofweek);
+                Log.d(TAG, "daysofweek1 = " + daysofweek);
             }
         }
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atime, pi);

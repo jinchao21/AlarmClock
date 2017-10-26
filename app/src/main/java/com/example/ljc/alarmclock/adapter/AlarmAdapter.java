@@ -41,6 +41,7 @@ public class AlarmAdapter extends BaseAdapter {
     private AlarmDataHelper dbHelper;
 
     private Context context;
+    private static final String TAG = "AlarmAdapter";
 
     public AlarmAdapter(Context context, List<Alarm> alarmList){
         this.context = context;
@@ -106,7 +107,7 @@ public class AlarmAdapter extends BaseAdapter {
                     db.update("alarms", values, "_id ="+id,null);
                     db.close();
                     alarmList.get(position).setState(true);
-                    Log.d("asd", "ischecked id = true");
+                    Log.d(TAG, "ischecked id = true");
 
                     Intent intent = new Intent(context, AlarmService.class);
                     Bundle bundle = new Bundle();
@@ -122,7 +123,7 @@ public class AlarmAdapter extends BaseAdapter {
                     alarmList.get(position).setState(false);
 
                     Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-                    intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
+//                    intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
                     PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     pi.cancel();
 //                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 20000, pi);
