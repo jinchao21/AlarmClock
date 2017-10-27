@@ -259,14 +259,14 @@ public class NewAlarm extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, minutes);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        Log.d("asd", "calendar1 = " + calendar.getTimeInMillis());
-        Log.d("asd", "calendar2 = " + System.currentTimeMillis());
+//        Log.d(TAG, "calendar1 = " + calendar.getTimeInMillis());
+//        Log.d(TAG, "calendar2 = " + System.currentTimeMillis());
 
         long atime = System.currentTimeMillis() + 2 * 7 * 24 * 60 * 60 * 1000;
         long time = calendar.getTimeInMillis();
         long ctime = System.currentTimeMillis();
         int dk = calendar.get(Calendar.DAY_OF_WEEK);
-        if (dk > 2)
+        if (dk > 1)
             dk = dk - 1;
         else
             dk = 7;

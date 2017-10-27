@@ -100,7 +100,7 @@ public class AlarmService extends Service {
                 time = calendar.getTimeInMillis();
 
                 //Calendar.DAY_OF_WEEK中1234567分别表示周日，周一至周六，此处问题当时没考虑到，故用以下判断完成对应
-                if (dk > 2)
+                if (dk > 1)
                     dk = dk - 1;
                 else
                     dk = 7;
@@ -201,7 +201,7 @@ public class AlarmService extends Service {
                 long time = calendar.getTimeInMillis();
                 long ctime = System.currentTimeMillis();
                 int dk = calendar.get(Calendar.DAY_OF_WEEK);
-                if (dk > 2)
+                if (dk > 1)
                     dk = dk - 1;
                 else
                     dk = 7;
