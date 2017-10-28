@@ -95,7 +95,6 @@ public class AlarmAdapter extends BaseAdapter {
         final int id = alarmList.get(position).id;
 
         //在闹钟状态的Switch上设置监听，根据Switch状态进行数据库读写以及发送闹钟意图
-//        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         holder.alarmState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -123,7 +122,6 @@ public class AlarmAdapter extends BaseAdapter {
                     alarmList.get(position).setState(false);
 
                     Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-//                    intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
                     PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     pi.cancel();
 //                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 20000, pi);

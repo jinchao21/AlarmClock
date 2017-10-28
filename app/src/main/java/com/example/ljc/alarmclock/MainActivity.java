@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtras(bundle);
         startService(intent);
 
-        Log.d(TAG, "System = " + System.currentTimeMillis());
+        Log.d(TAG, "currentTimeMillis = " + System.currentTimeMillis());
 
         //使用Handler更新时间
         Handler mTimeHandler = new Handler() {

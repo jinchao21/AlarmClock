@@ -202,21 +202,11 @@ public class NewAlarm extends AppCompatActivity {
             }
         });
 
-        //点击保存，先将数据写入数据库，而后设置闹钟，返回主界面
+        //点击保存，调用setOnceAlarm（），返回主界面
         btSave.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put("hour", hour);
-                values.put("minutes", minutes);
-                values.put("daysofweek", daysofweek);
-                values.put("vibrate", vibrate);
-                values.put("ring", ring);
-                values.put("state", state);
-                db.insert("alarms", null, values);
                 setOnceAlarm();
                 finish();
             }
@@ -224,11 +214,20 @@ public class NewAlarm extends AppCompatActivity {
     }
 
 
-    //设置一次闹钟，重复闹钟也只设置一次，取最近一次闹钟设置，之后其他闹钟会在service中进行设置
+    //先将数据写入数据库，而后设置闹钟，设置一次闹钟，重复闹钟也只设置一次，取最近一次闹钟设置，之后其他闹钟会在service中进行设置
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setOnceAlarm() {
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("hour", hour);
+        values.put("minutes", minutes);
+        values.put("daysofweek", daysofweek);
+        values.put("vibrate", vibrate);
+        values.put("ring", ring);
+        values.put("state", state);
+        db.insert("alarms", null, values);
+
         Cursor cursor = db.query("alarms", null, null, null, null, null, null);
         cursor.moveToLast();
         int id = cursor.getInt(cursor.getColumnIndex("_id"));
@@ -236,19 +235,14 @@ public class NewAlarm extends AppCompatActivity {
         db.close();
 
         Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-//        intent.setAction("com.example.ljc.alarmclock.Broadcast.AlarmBroadcastReceiver");
 
         //使用intent传递bundle数据
         Bundle bundle = new Bundle();
         bundle.putInt("_id", id);
-        Log.d(TAG, "new alarm id = " + Integer.toString(id));
-        bundle.putInt("hour", hour);
-        bundle.putInt("minutes", minutes);
         bundle.putInt("daysofweek", daysofweek);
         bundle.putInt("vibrate", vibrate);
         bundle.putInt("ring", ring);
-        bundle.putInt("state", state);
-
+        Log.d(TAG, "new alarm id = " + Integer.toString(id));
         intent.putExtras(bundle);
 
         //延时广播
